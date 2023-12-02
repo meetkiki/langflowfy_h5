@@ -1,0 +1,48 @@
+@theme-light: {
+  theme-bg-color: #fff;
+  themg-text-color: #000;
+  theme-border-color: #d9d9e3;
+};
+@theme-dark: {
+  theme-bg-color: #343541;
+  themg-text-color: #fff;
+  theme-border-color: #343541;
+};
+
+/* 定义theme混入 */
+.theme-bg-mixin {
+  html[data-theme="light"] & {
+    background-color: @theme-light[theme-bg-color];
+  }
+  html[data-theme="dark"] & {
+    background-color: @theme-dark[theme-bg-color];
+  }
+}
+
+.theme-text-mixin {
+  html[data-theme="light"] & {
+    color: @theme-light[themg-text-color];
+  }
+  html[data-theme="dark"] & {
+    color: @theme-dark[themg-text-color];
+  }
+}
+
+.theme-border-mixin {
+  html[data-theme="light"] & {
+    border: 1px solid @theme-light[theme-border-color];
+  }
+  html[data-theme="dark"] & {
+    border: 1px solid @theme-dark[theme-border-color];
+  }
+}
+
+.theme-shadow-mixin {
+  html[data-theme="light"] & {
+    box-shadow: 0 0 0 transparent, 0 0 0 transparent,
+      0 0 15px rgba(0, 0, 0, 0.1);
+  }
+  html[data-theme="dark"] & {
+    box-shadow: 5px 6px 6px #303139, -5px -6px 6px #303139;
+  }
+}
