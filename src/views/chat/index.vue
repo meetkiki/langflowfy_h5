@@ -207,18 +207,6 @@ import {
   chatHistoryMessages,
 } from "@/api/chat";
 import {
-  SyncOutlined,
-  PlusOutlined,
-  SendOutlined,
-  MessageOutlined,
-  LoadingOutlined,
-  PaperClipOutlined,
-  FileImageOutlined,
-  DownCircleOutlined,
-  PauseCircleOutlined,
-  CloseCircleOutlined,
-} from "@ant-design/icons-vue";
-import {
   h,
   ref,
   reactive,
