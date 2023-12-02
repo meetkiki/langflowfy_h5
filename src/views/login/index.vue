@@ -41,6 +41,9 @@
 </template>
 
 <script setup lang="ts">
+
+import NProgress from 'nprogress';
+import 'nprogress/nprogress.css';
 import { login } from "@/api/chat";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/store/user";
@@ -72,13 +75,15 @@ const formState = reactive({
 const { validate } = useForm(formState, formRules);
 const handleSubmit = async () => {
   validate()
-    .then(async () => {
-      const { code, message: msg = "" } = await login(toRaw(formState));
-      if (code !== 200) return message.error(msg);
-      router.push("/");
-      store.$patch((state) => {
-        state.isLogin = true;
-      });
+      .then(async () => {
+        NProgress.start(); // 开始显示 NProgress 进度条
+        const { code, message: msg = "" } = await login(toRaw(formState));
+        NProgress.done(); // 结束
+        if (code !== 200) return message.error(msg);
+        router.push("/");
+        store.$patch((state) => {
+          state.isLogin = true;
+        });
     })
     .catch((err: any) => {
       console.log("err", err);

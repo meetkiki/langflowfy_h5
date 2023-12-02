@@ -1,44 +1,40 @@
 <template>
-  <Theme />
+  <Theme/>
   <div class="chat-container">
     <div class="chat-container-left">
       <a-button
-        ghost
-        size="large"
-        @click="handleNewChat"
-        style="width: 100%; border-radius: 6px"
+          ghost
+          size="large"
+          @click="handleNewChat"
+          style="width: 100%; border-radius: 6px"
       >
         <span>New Chat</span>
         <template #icon>
-          <PlusOutlined />
+          <PlusOutlined/>
         </template>
       </a-button>
       <div class="history-container">
-        <div
-          :class="[
-            'history-container-item',
-            { 'history-container-item-active': i == historyIndex },
-          ]"
-          v-for="(record, i) in state.history"
-          :Key="record.createdAt"
-          @click="handleRestoreHistory(record, i)"
+        <div :class="['history-container-item',{ 'history-container-item-active': i == historyIndex },]"
+            v-for="(record, i) in state.history"
+            :Key="record.createdAt"
+            @click="isLoadingHistory ? null : handleRestoreHistory(record, i)"
         >
-          <MessageOutlined />
+          <MessageOutlined/>
           <div class="history-title">{{ record.chatName }}</div>
         </div>
       </div>
     </div>
     <div class="chat-container-right">
       <Assistant
-        style="position: absolute; top: 10px; left: 10px"
-        v-model:assistantId="assistant.id"
-        validateLogin="validateLogin"
-        @update-chat="handleUpdateChat"
-        @update-assistant="handleUpdateAssistant"
+          style="position: absolute; top: 10px; left: 10px"
+          v-model:assistantId="assistant.id"
+          :validateLogin="validateLogin"
+          @update-chat="handleUpdateChat"
+          @update-assistant="handleUpdateAssistant"
       />
       <div
-        class="chat-container-right-center"
-        :style="{
+          class="chat-container-right-center"
+          :style="{
           '--dynamics-content-color': state.messages.length
             ? 'transparent'
             : '#505161',
@@ -50,43 +46,35 @@
               <!-- 添加判断，如果是机器人的消息也显示头像 -->
               <div :class="['avatar', `${msg.userType?.toLowerCase()}-avatar`]">
                 <span v-if="msg.userType === Roles.USER">Y</span>
-                <img
-                  v-else-if="msg.userType === Roles.ASSISTANT"
-                  src="@/assets/images/chatGpt.svg"
-                />
+                <img v-else-if="msg.userType === Roles.ASSISTANT" src="@/assets/images/chatGpt.svg"/>
+
               </div>
               <div class="message-content">
-                <span
-                  class="sender-name"
-                  v-if="msg.userType === Roles.ASSISTANT"
-                >
+                <span class="sender-name" v-if="msg.userType === Roles.ASSISTANT">
                   ChatGPT
                 </span>
-                <div
-                  class="message-text"
-                  v-html="renderMarkdown(msg.message)"
-                />
+                <div class="message-text" v-html="renderMarkdown(msg.message)"></div>
               </div>
             </li>
           </ul>
         </div>
         <div class="chat-container-footer-content">
           <div
-            class="chat-container-footer-regenerate"
-            v-if="retry.retryFailed"
+              class="chat-container-footer-regenerate"
+              v-if="retry.retryFailed"
           >
             <span style="color: red">
               <span style="color: red">network error,</span>
               There was an errorgenerating a response
             </span>
             <Button
-              type="primary"
-              class="regenerate-button"
-              @click="handleRegenerate"
+                type="primary"
+                class="regenerate-button"
+                @click="handleRegenerate"
             >
               <template #icon>
                 <SyncOutlined
-                  :class="[
+                    :class="[
                     'regenerate',
                     { 'regenerate-rotate': retry.regenerating },
                   ]"
@@ -98,9 +86,9 @@
           <div class="chat-container-textarea" v-else>
             <div class="file-container" v-if="files.length">
               <div
-                v-for="file in files"
-                :key="file.id"
-                :class="[
+                  v-for="file in files"
+                  :key="file.id"
+                  :class="[
                   'file-container-item',
                   file.type === 'image'
                     ? 'file-container-item-image'
@@ -108,45 +96,45 @@
                 ]"
               >
                 <CloseCircleOutlined
-                  class="file-clear-icon"
-                  @click="handleRemoveFile(file.id)"
+                    class="file-clear-icon"
+                    @click="handleRemoveFile(file.id)"
                 />
                 <Image
-                  v-if="file.type === 'image'"
-                  :width="60"
-                  :height="60"
-                  :src="file.url"
-                  :key="file.id"
+                    v-if="file.type === 'image'"
+                    :width="60"
+                    :height="60"
+                    :src="file.url"
+                    :key="file.id"
                 />
-                <File v-else-if="file.type === 'file'" :file="file" />
+                <File v-else-if="file.type === 'file'" :file="file"/>
               </div>
             </div>
             <Upload
-              v-show="upload.visible"
-              multiple
-              name="file"
-              ref="uploadRef"
-              action="/api/uploadFile"
-              :disabled="!store.isLogin"
-              :showUploadList="false"
-              :data="{ assistantId : assistant.id }"
-              :headers="{ auth: store?.auth }"
-              :beforeUpload="handleBeforeUpload"
-              @change="handleUploadChange"
+                v-show="upload.visible"
+                multiple
+                name="file"
+                ref="uploadRef"
+                action="/api/uploadFile"
+                :disabled="!store.isLogin"
+                :showUploadList="false"
+                :data="{ assistantId : assistant.id }"
+                :headers="{ auth: store?.auth }"
+                :beforeUpload="handleBeforeUpload"
+                @change="handleUploadChange"
             >
-              <LoadingOutlined class="left-icon" v-if="upload.loading" />
+              <LoadingOutlined class="left-icon" v-if="upload.loading"/>
               <template v-else>
                 <FileImageOutlined
-                  v-if="upload.onlyImage"
-                  :class="[
+                    v-if="upload.onlyImage"
+                    :class="[
                     'left-icon',
                     { 'left-icon-not-allowed': store.isLogin },
                   ]"
-                  style="font-size: 18px; bottom: 22px; left: 1%"
+                    style="font-size: 18px; bottom: 22px; left: 1%"
                 />
                 <PaperClipOutlined
-                  v-else
-                  :class="[
+                    v-else
+                    :class="[
                     'left-icon left-icon-rotate',
                     { 'left-icon-not-allowed': store.isLogin },
                   ]"
@@ -154,31 +142,31 @@
               </template>
             </Upload>
             <Textarea
-              ref="textarea"
-              :auto-size="{ minRows: 1, maxRows: 5 }"
-              v-model:value="state.userInput"
-              @pressEnter="handePressEnterSendMessage"
-              placeholder="Message ChatGPT..."
+                ref="textarea"
+                :auto-size="{ minRows: 1, maxRows: 5 }"
+                v-model:value="state.userInput"
+                @pressEnter="handePressEnterSendMessage"
+                placeholder="Message ChatGPT..."
             />
             <SendOutlined
-              v-if="!sending"
-              @click="sendMessage"
-              :class="[
+                v-if="!sending"
+                @click="sendMessage"
+                :class="[
                 'right-icon',
                 { 'right-icon-unable-send': !isAbleSendMsg },
               ]"
             />
             <PauseCircleOutlined
-              v-else
-              @click="handleStopConnect"
-              class="right-icon"
+                v-else
+                @click="handleStopConnect"
+                class="right-icon"
             />
           </div>
           <!-- 内容超出视口区域时显示  去底部icon -->
           <DownCircleOutlined
-            v-if="showToBottom"
-            class="chat-to-bottom-icon"
-            @click="move"
+              v-if="showToBottom"
+              class="chat-to-bottom-icon"
+              @click="move"
           />
         </div>
       </div>
@@ -187,16 +175,16 @@
 </template>
 
 <script setup lang="ts">
-import { Theme } from "@/components";
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/store/user";
-import { DownLoadFile } from "./typing";
-import { useUploadStore } from "@/store/upload";
-import { File, Assistant } from "./components";
-import { convertBase64, uuid } from "@/utils/utils";
-import { EventSourcePolyfill } from "event-source-polyfill";
-import type { UploadChangeParam } from "ant-design-vue";
-import { createImage, createFile } from "./utils";
+import {Theme} from "@/components";
+import {useRouter} from "vue-router";
+import {useUserStore} from "@/store/user";
+import {DownLoadFile} from "./typing";
+import {useUploadStore} from "@/store/upload";
+import {File, Assistant} from "./components";
+import {convertBase64, sleep, uuid} from "@/utils/utils";
+import {EventSourcePolyfill} from "event-source-polyfill";
+import type {UploadChangeParam} from "ant-design-vue";
+import {createImage, createFile} from "./utils";
 import {
   Roles,
   FileTypes,
@@ -240,9 +228,11 @@ import {
   onUnmounted,
 } from "vue";
 
+import 'nprogress/nprogress.css';
 import hljs from "highlight.js";
 import Clipboard from "clipboard";
 import MarkdownIt from "markdown-it";
+import NProgress from "nprogress";
 
 const router = useRouter();
 const store = useUserStore();
@@ -250,8 +240,8 @@ const uploadStore = useUploadStore();
 
 const clipboardInstance = ref<Clipboard | null>(null);
 const assistant = ref({
-  "id":"asst_XXXXXX",
-  "welcomeMessage":"欢迎使用chatGPT，你可以尝试问我你的问题."
+  "id": "asst_XXXXXX",
+  "welcomeMessage": "欢迎使用chatGPT，你可以尝试问我你的问题."
 });
 const textarea = ref<typeof Textarea | null>(null);
 const uploadRef = ref<typeof Upload | null>(null);
@@ -273,7 +263,7 @@ const upload = reactive({
   count: 0,
   visible: computed(() => uploadStore.supportFile || uploadStore.supportImage),
   onlyImage: computed(
-    () => !uploadStore.supportFile && uploadStore.supportImage
+      () => !uploadStore.supportFile && uploadStore.supportImage
   ),
 });
 /* 断连重试次数 */
@@ -285,7 +275,7 @@ const retry = reactive({
   regenerating: false,
 });
 const isAbleSendMsg = computed(() =>
-  !sending || (!state.userInput && !files.value.length) ? false : true
+    !sending || (!state.userInput && !files.value.length) ? false : true
 );
 const md = new MarkdownIt({
   html: true,
@@ -298,23 +288,69 @@ const md = new MarkdownIt({
     if (lang && hljs.getLanguage(lang)) {
       try {
         return `<pre class="hljs">${copy}<code id='${copyid}'>${
-          hljs.highlight(lang, str, true).value
+            hljs.highlight(lang, str, true).value
         }</code></pre>`;
-      } catch (__) {}
+      } catch (__) {
+        console.log(__, 'error')
+      }
     }
     return (
-      '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + "</code></pre>"
+        '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + "</code></pre>"
     );
   },
 });
 
-const renderMarkdown = (rawMarkdown: any) => md.render(rawMarkdown);
+const markdownRef = ref(null);
+
+const renderMarkdown = (rawMarkdown: any) => {
+  let markdown = md.render(rawMarkdown);
+  markdownRef.value = markdown;
+  return markdown;
+}
+
+const renderInputCursor = () => {
+  nextTick(() => {
+    let dom = document.getElementsByClassName("message-text")
+    let parent = dom[dom.length - 1]
+    let lastNode = parent.lastElementChild || parent
+    // 假如是pre标签，就在pre标签中找到class为hljs的元素
+    if (lastNode.tagName === 'PRE') {
+      lastNode = lastNode.getElementsByClassName('hljs')[0] || lastNode
+    }
+    // 兼容是ul标签的情况，找到OL标签内部的最终一个元素
+    if (lastNode.tagName === 'OL') {
+      lastNode = findLastTextNode(lastNode as HTMLElement)
+    }
+
+    // 重复插入 跳过
+    let lastChild = lastNode.lastChild as Element
+    if (lastChild && lastChild.tagName == 'SPAN'){
+      return
+    }
+    // 插入光标到最后一个文本节点之后
+    lastNode ?.insertAdjacentHTML('beforeend', '<span class="blinking-cursor"/></span>');
+  })
+}
+
+const findLastTextNode = (element : Element) : Element => {
+// 假如该DOM没有子元素，则回来本身
+  if (!element.children.length) {
+    return element
+  }
+  const lastChild = element.children[element.children.length - 1]
+  // 假如最终一个子元素是元素节点，则递归查找
+  if (lastChild.nodeType === Node.ELEMENT_NODE) {
+    return findLastTextNode(lastChild as HTMLElement)
+  }
+  return element;
+};
+
 /* 初始化消息对象 */
 const pushMessage = (
-  isClear: boolean = true,
-  message : string = '',
-  messageId : string = 'defaultMessageId',
-  userType: string = "ASSISTANT"
+    isClear: boolean = true,
+    message: string = '',
+    messageId: string = 'defaultMessageId',
+    userType: string = "ASSISTANT"
 ) => {
   // 如果 message 未定义或为空，使用 assistant.name 作为默认值
   const defaultMessage = "欢迎使用ChatGPT"; // 或任何其他默认文本
@@ -326,53 +362,46 @@ const pushMessage = (
     {
       userType,
       messageType: "TEXT",
-      message : finalMessage,
-      messageId : messageId,
+      message: finalMessage,
+      messageId: messageId,
       time: "",
-      done: false,
+      done: false
     },
   ];
 };
 /* 创建会话 */
 const getChatId = async () => {
-  const { code, data, message: msg = "" } = await createChat(assistant.value.id);
+  const {code, data, message: msg = ""} = await createChat(assistant.value.id);
   if (code !== 200) return message.error(msg);
   chatId.value = data;
   pushMessage();
 };
 
-function displayStreamMessage(content: string, files: any[], role: string) {
-  /* 处理返回的图片、文件、下载资源 */
-  content = analysisFilesToContent(content, files, role);
-  if (state.messages.at(-1).done) {
-    // 添加新的消息
-    pushMessage(false, content, "",role || "ASSISTANT");
-  } else {
-    // 更新最后一条消息
-    state.messages.at(-1).message += content;
-  }
-}
-
-
-function displayBatchMessage(messageId: string, type: string, toolType: string, content: string, files: any[], done: boolean, role: string) {
-  if (!messageId || messageId === "null"){
+function displayBatchMessage(data : object) {
+  let {messageId, type, toolType, streamType, content, files = [], done, role} = data as any;
+  if (!messageId || messageId === "null") {
     console.log(" messageId error ", messageId)
   }
   // 更新具有相同 messageId 的消息
-  const messageIndex = state.messages.findIndex(msg => msg.messageId === messageId);
+  let messageIndex = state.messages.findIndex(msg => msg.messageId === messageId);
+  if (messageIndex === -1) {
+    messageIndex = state.messages.findIndex(msg => msg.messageId === 'TempMessageId');
+  }
   if (type === "TOOL" && toolType === "CODE_INTERPRETER") {
-    content = "\n```python\n" + content  + "\n```\n";
+    content = "\n```python\n" + content + "\n```\n";
   }
   content = analysisFilesToContent(content, files, role);
   if (messageIndex !== -1) {
-    console.log(" update message = " + messageId + " content " + content)
     // 更新消息
-    state.messages[messageIndex].message = content;
+    if (streamType == 'BATCH'){
+      state.messages[messageIndex].message = content;
+    } else {
+      state.messages[messageIndex].message += content;
+    }
     state.messages[messageIndex].messageId = messageId;
     state.messages[messageIndex].done = done;
   } else {
-    console.log(" push message = " + messageId + " content " + content)
-    pushMessage(false, content, messageId,role || "ASSISTANT");
+    pushMessage(false, content, messageId, role || "ASSISTANT");
   }
 }
 
@@ -381,16 +410,16 @@ const initEventSource = () => {
   if (!chatId.value) return;
   return new Promise<void>((resolve) => {
     const eventSource = new EventSourcePolyfill(
-      `/api/conversion?chatId=${chatId.value}`,
-      {
-        headers: {
-          "Content-Type": "text/event-stream;charset=UTF-8",
-          "Cache-Control": "no-cache",
-          Connection: "keep-alive",
-          auth: store?.auth,
-        },
-        heartbeatTimeout: 10 * 60 * 1000,
-      }
+        `/api/conversion?chatId=${chatId.value}`,
+        {
+          headers: {
+            "Content-Type": "text/event-stream;charset=UTF-8",
+            "Cache-Control": "no-cache",
+            Connection: "keep-alive",
+            auth: store?.auth,
+          },
+          heartbeatTimeout: 10 * 60 * 1000,
+        }
     );
     eventSource.onopen = (event) => {
       sse.value = event.target;
@@ -401,31 +430,39 @@ const initEventSource = () => {
       retry.retryFailed = false;
       retry.retrySuccess = true;
       if (event.type === "ERROR") {
+        removeRenderInputCursor();
         return sse.value?.close();
       }
       const parseData = JSON.parse(event.data);
-      console.log("EventSourcePolyfill:", parseData);
-      let { messageId, type, toolType, streamType, content, files = [], done, role } = parseData;
+      // console.log("EventSourcePolyfill:", parseData);
+      let {type, content, done} = parseData;
+      if (type === 'HEARTBEAT'){
+        // console.log("Heartbeat received");
+        return;
+      }
+
       if (done) {
         sending.value = false;
         state.messages.at(-1).done = done;
+        removeRenderInputCursor();
       }
-      if (type == 'ERROR'){
+      if (type == 'ERROR') {
         console.error("data error . ", parseData);
+        removeRenderInputCursor();
         return;
       }
       if (!content || content === "null") {
         return;
       }
-      if (streamType == 'BATCH'){
-        displayBatchMessage(messageId, type, toolType, content, files, done, role);
-      } else {
-        displayStreamMessage(content, files, role);
+      displayBatchMessage(parseData);
+      if (!done){
+        renderInputCursor();
       }
       autoScrollToBottom();
     };
     eventSource.onerror = (event: any) => {
       console.error("EventSourcePolyfill-Error", event);
+      removeRenderInputCursor();
       sending.value = false;
       sse.value = null;
       event.target.close();
@@ -435,6 +472,20 @@ const initEventSource = () => {
     };
   });
 };
+
+/* 删除光标 */
+const removeRenderInputCursor = () => {
+  let dom = document.getElementsByClassName("blinking-cursor") as HTMLCollectionOf<Element>;
+  if (dom){
+    for (let i = 0; i < dom.length; i++) {
+      let domEle = dom[i];
+      if (domEle){
+        domEle.remove();
+      }
+    }
+  }
+}
+
 /* 会话、发送消息 */
 const handePressEnterSendMessage = (e: KeyboardEvent) => {
   if (!e.shiftKey) {
@@ -454,8 +505,11 @@ const sendMessage = () => {
     isAutoScrolling.value = true;
     input = renderFile() + `<p>${input.replace(/(\r\n|\r|\n)/g, "\n")}</p>`;
     sending.value = true;
+
+    NProgress.start(); // 开始显示 NProgress 进度条
     chat(chatId.value, state.userInput, fileKeys.value).then(
-        ({ code, message: msg = "" , data}) => {
+        ({code, message: msg = "", data}) => {
+          NProgress.done(); // 结束
           if (code !== 200) {
             return message.error(msg);
           } else {
@@ -463,11 +517,18 @@ const sendMessage = () => {
             state.messages.push({
               time: Date.now(),
               message: input,
-              messageId : data.messageId,
+              messageId: data.messageId,
               messageType: "TEXT",
               userType: Roles.USER,
               done: true,
             });
+            state.messages.push({
+              userType: Roles.ASSISTANT,
+              messageId: 'TempMessageId',
+              message: ''
+            })
+            // 闪烁图标
+            renderInputCursor();
             clear();
             autoScrollToBottom();
           }
@@ -494,7 +555,7 @@ const clear = () => {
 const renderFile = (): string => {
   let result = "";
   files.value.map((file: any) => {
-    const { url, type, name, describe } = file;
+    const {url, type, name, describe} = file;
     if (type === "image") {
       result += createImage(url);
     } else if (type === "file") {
@@ -505,10 +566,10 @@ const renderFile = (): string => {
 };
 /* 上传附件 */
 const handleBeforeUpload = (
-  file: UploadChangeParam["file"],
-  fileList: UploadChangeParam["fileList"]
+    file: UploadChangeParam["file"],
+    fileList: UploadChangeParam["fileList"]
 ) => {
-  const { supportFile, supportImage } = uploadStore;
+  const {supportFile, supportImage} = uploadStore;
   if (!supportFile && !supportImage) {
     message.warn("当前助理不支持上传附件");
     return false;
@@ -528,13 +589,13 @@ const handleBeforeUpload = (
   upload.loading = true;
   upload.count = fileList.length;
 };
-const handleUploadChange = async ({ fileList }: UploadChangeParam) => {
+const handleUploadChange = async ({fileList}: UploadChangeParam) => {
   for (let index = 0; index < fileList.length; index++) {
     const {
       type,
       name,
       status,
-      response: { code, data: id = "", message: msg = "" } = {},
+      response: {code, data: id = "", message: msg = ""} = {},
     } = fileList[index];
     if (status === "uploading") return;
     if (status === "done") {
@@ -579,7 +640,7 @@ const handleRemoveFile = (id: string) => {
   fileKeys.value = fileKeys.value.filter((fid: string) => fid !== id);
   /* 清除Upload组件缓存文件 */
   uploadRef.value!.fileList = uploadRef.value!.fileList.filter(
-    (f: any) => f.response.data !== id
+      (f: any) => f.response.data !== id
   );
 };
 /* 将内容自动滚动至视口区域 */
@@ -587,7 +648,11 @@ const move = () => {
   isAutoScrolling.value = true;
   showToBottom.value = false;
   const ele = document.querySelector<HTMLElement>(".messages")!;
-  ele.scrollTop = ele.scrollHeight + 1000;
+  if (ele) {
+    ele.scrollTop = ele.scrollHeight; // 如果只需滚动到底部，无需额外距离
+  } else {
+    console.warn("未找到 '.messages' 元素，无法滚动");
+  }
 };
 const autoScrollToBottom = () => {
   nextTick(() => {
@@ -597,11 +662,11 @@ const autoScrollToBottom = () => {
 /* 监听鼠标滚动 */
 const watchWheel = () => {
   const ele = document.querySelector<HTMLElement>(".messages")!;
-  const { height } = ele.getBoundingClientRect();
+  const {height} = ele.getBoundingClientRect();
   ele.addEventListener("wheel", function (e: WheelEvent) {
-    const { height: ulHeight } = document
-      .querySelector<HTMLElement>(".messages ul")!
-      .getBoundingClientRect();
+    const {height: ulHeight} = document
+        .querySelector<HTMLElement>(".messages ul")!
+        .getBoundingClientRect();
     if (e.deltaY < 0) {
       isAutoScrolling.value = false;
       showToBottom.value = true;
@@ -629,9 +694,23 @@ const getHistoryList = async () => {
     getChatId();
   }
 };
+
+const isLoadingHistory = ref(false);
 /* 切换历史记录 */
-const handleRestoreHistory = async (record: any, i: number) => {
-  if (historyIndex.value === i) return;
+const handleRestoreHistory = async (record: any, index: number) => {
+  if (historyIndex.value === index || isLoadingHistory.value) return;
+
+  if (isLoadingHistory.value) {
+    notification.warning({
+      message: '请稍等',
+      description: '请等待当前历史消息加载完成后再尝试切换。',
+      duration: 3
+    });
+    return;
+  }
+  isLoadingHistory.value = true; // 开始加载历史消息，设置标志为 true
+  NProgress.start(); // 开始显示 NProgress 进度条
+
   // 关闭现有的 SSE 连接
   sse.value?.close();
   sse.value = null;
@@ -639,11 +718,14 @@ const handleRestoreHistory = async (record: any, i: number) => {
   // 使用历史记录更新 assistantId 和 chatId
   chatId.value = record.chatId;
   assistant.value.id = record.assistantId;
-  historyIndex.value = i;
+  historyIndex.value = index;
 
   isAutoScrolling.value = true;
   // 调用函数以重新建立连接并加载历史消息
-  await reconnectAndLoadHistoryMessages();
+  reconnectAndLoadHistoryMessages().then(() => {
+    isLoadingHistory.value = false; // 加载完成，设置标志为 false
+    NProgress.done(); // 结束 NProgress 进度条
+  });
 };
 
 // 新建立一个函数来处理重新连接和加载历史消息的逻辑
@@ -657,6 +739,7 @@ const reconnectAndLoadHistoryMessages = async () => {
 
 /* 获取历史会话消息 */
 const getHistoryMessages = async () => {
+  NProgress.start(); // 开始显示 NProgress 进度条
   state.messages = [];
   // 初始化消息
   pushMessage();
@@ -667,7 +750,7 @@ const getHistoryMessages = async () => {
   } = await chatHistoryMessages(chatId.value);
   if (code !== 200) return message.error(msg);
   if (data?.length) {
-    data.map(({ type, toolType, messageId, content, files, role }: any) => {
+    data.map(({type, toolType, messageId, content, files, role}: any) => {
       /* 处理python代码高亮 */
       if (type === "TOOL" && toolType === "CODE_INTERPRETER") {
         content = "\n```python\n" + content + "\n```\n";
@@ -679,6 +762,7 @@ const getHistoryMessages = async () => {
     pushMessage();
   }
   autoScrollToBottom();
+  NProgress.done();
 };
 /* 新建会话 */
 const handleNewChat = () => {
@@ -704,27 +788,27 @@ const handleUpdateAssistant = (assistantId: string, welcomeMessage: string) => {
 };
 /* 解析file、image */
 const analysisFilesToContent = (
-  content: string,
-  files: DownLoadFile[],
-  role: string
+    content: string,
+    files: DownLoadFile[],
+    role: string
 ): string => {
   const markdownFiles = files?.filter(
-    (f: DownLoadFile) => f && f.fileType === "DOC"
+      (f: DownLoadFile) => f && f.fileType === "DOC"
   );
   const markdownImages = files?.filter(
-    (f: DownLoadFile) => f && f.fileType === "IMAGE"
+      (f: DownLoadFile) => f && f.fileType === "IMAGE"
   );
-  markdownImages?.map(({ url }: DownLoadFile) => {
+  markdownImages?.map(({url}: DownLoadFile) => {
     content = createImage(url) + content;
   });
   if (role === Roles.USER) {
-    markdownFiles?.map(({ filename }: DownLoadFile) => {
+    markdownFiles?.map(({filename}: DownLoadFile) => {
       content = createFile(filename, filename.split(".")[1]) + content;
     });
   } else if (role === Roles.ASSISTANT) {
     content = content.replace(
-      downloadReg,
-      `${handleDownloadFile(markdownFiles)}`
+        downloadReg,
+        `${handleDownloadFile(markdownFiles)}`
     );
   }
   return content;
@@ -734,7 +818,7 @@ const handleDownloadFile = (files: DownLoadFile[]): string => {
   let result = "";
   if (files?.length) {
     for (let i = 0; i < files.length; i++) {
-      const { url, filename } = files[i];
+      const {url, filename} = files[i];
       result += `\n点击<a href="${url}" download="${filename}">${filename}</a>`;
     }
   }
@@ -749,17 +833,17 @@ const validateLogin = () => {
         message: "提示",
         description: "用户需要登录后，才能体验完整功能",
         btn: () =>
-          h(
-            Button,
-            {
-              type: "primary",
-              onClick: () => {
-                router.push("/login");
-                notification.close(key);
-              },
-            },
-            { default: () => "跳转登录" }
-          ),
+            h(
+                Button,
+                {
+                  type: "primary",
+                  onClick: () => {
+                    router.push("/login");
+                    notification.close(key);
+                  },
+                },
+                {default: () => "跳转登录"}
+            ),
         key,
         onClose: () => notification.close(key),
       });
@@ -771,23 +855,24 @@ const validateLogin = () => {
 /* sse 断连重试 */
 const retrySseConnection = () => {
   if (retry.retrying) return;
-  retry.retrySuccess = false;
   retry.retrying = true;
   let timer: number;
   if (retry.retryMaxTimes >= RETRY_MAX_TIMES) {
-    clearInterval(timer!);
+    retry.retrying = false;
     retry.retryFailed = true;
     return;
   }
-  timer = window.setInterval(() => {
-    if (retry.retrySuccess) {
-      clearTimeout(timer);
-      retry.retryMaxTimes = 0;
-    } else {
-      console.info(`重试第${retry.retryMaxTimes}次`);
-      ++retry.retryMaxTimes;
-      initEventSource();
+  timer = window.setInterval(async () => {
+    if (retry.retryMaxTimes >= RETRY_MAX_TIMES) {
+      clearInterval(timer);
+      retry.retryFailed = true;
+      retry.retrying = false;
+      return;
     }
+    console.info(`重试第${retry.retryMaxTimes}次`);
+    ++retry.retryMaxTimes;
+    // 延迟0.5s后重试
+    sleep(500).then(() => initEventSource());
   }, 1000);
 };
 /* Regenerate */
@@ -796,9 +881,9 @@ const handleRegenerate = async () => {
   await initEventSource();
   const input = state.messages.at(-1).message;
   chat(chatId.value, input, fileKeys.value).then(
-    ({ code, message: msg = "" }) => {
-      if (code !== 200) return message.error(msg);
-    }
+      ({code, message: msg = ""}) => {
+        if (code !== 200) return message.error(msg);
+      }
   );
   clear();
   autoScrollToBottom();
@@ -821,7 +906,6 @@ onUnmounted(() => {
   clipboardInstance.value?.destroy();
 });
 </script>
-
 <style lang="less" scoped>
 @import "./index.less";
 </style>

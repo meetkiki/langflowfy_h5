@@ -5,6 +5,7 @@
   font-size: 14px;
   overflow-x: hidden;
   .theme-bg-mixin();
+
   .chat-container-left {
     width: 16%;
     min-width: 140px;
@@ -12,22 +13,28 @@
     padding: 10px;
     box-sizing: border-box;
     color: #fff;
+
     .history-container {
       height: calc(100vh - 70px);
       overflow-y: scroll;
       margin-top: 10px;
+
       &::-webkit-scrollbar {
         width: 2px;
       }
+
       &::-webkit-scrollbar-track {
         border-radius: 3px;
       }
+
       /* 滚动条滑块 */
+
       &::-webkit-scrollbar-thumb {
         background: rgba(255, 255, 255, 0.2);
         border-radius: 3px;
         -webkit-box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.05);
       }
+
       .history-container-item {
         display: flex;
         align-items: center;
@@ -36,6 +43,7 @@
         border-radius: 6px;
         margin-bottom: 5px;
         cursor: pointer;
+
         .history-title {
           margin-left: 10px;
           width: 85%;
@@ -44,24 +52,29 @@
           text-overflow: ellipsis;
         }
       }
+
       .history-container-item:hover,
       .history-container-item-active {
         background-color: #202123;
       }
+
       .history-container-item-content:last-of-type {
         margin-bottom: 0;
       }
     }
   }
+
   .chat-container-right {
     flex: 1;
     position: relative;
+
     .chat-container-right-center {
       width: 70%;
       max-width: 70%;
       margin: 0 auto;
       position: relative;
       height: 100vh;
+
       &::before {
         content: "ChatGPT";
         color: var(--dynamics-content-color);
@@ -72,6 +85,7 @@
         left: 50%;
         transform: translate(-50%, -50%);
       }
+
       .messages {
         position: relative;
         height: calc(100vh - 120px);
@@ -81,27 +95,33 @@
         z-index: 10;
         scroll-behavior: smooth;
         .theme-text-mixin();
+
         &::-webkit-scrollbar {
           width: 4px;
           height: 4px;
         }
+
         &::-webkit-scrollbar-track {
           background: rgba(255, 255, 255, 0.15);
           border-radius: 3px;
           -webkit-box-shadow: inset 0 0 5px rgba(37, 37, 37, 0.05);
         }
+
         &::-webkit-scrollbar-thumb {
           background: #e2e2e2;
           border-radius: 3px;
           -webkit-box-shadow: inset 0 0 5px rgba(255, 255, 255, 0.05);
         }
+
         ul {
           padding: 0;
         }
+
         li {
           display: flex;
           margin-bottom: 20px;
         }
+
         .avatar {
           width: 40px;
           height: 40px;
@@ -112,12 +132,15 @@
           justify-content: center;
           align-items: center;
         }
+
         .user-avatar {
           background-color: #93939d;
           font-size: 20px;
         }
+
         .assistant-avatar {
           background-color: rgb(25, 195, 125);
+
           img {
             width: 24px;
             height: 24px;
@@ -125,6 +148,7 @@
             color: #fff;
           }
         }
+
         .message-content {
           width: calc(90% - 10px);
           border-radius: 15px;
@@ -133,15 +157,18 @@
           justify-content: center;
           margin-top: 0;
         }
+
         .message-text {
           margin: 0;
           white-space: normal;
           word-wrap: break-word;
         }
+
         .sender-name {
           margin: 10px 0;
         }
       }
+
       .chat-container-footer-content {
         width: 100%;
         position: absolute;
@@ -149,30 +176,36 @@
         bottom: 20px;
         display: flex;
         justify-content: center;
+
         .chat-container-footer-regenerate {
           display: flex;
           flex-flow: column;
           align-items: center;
+
           & > span {
             margin-bottom: 10px;
             .theme-text-mixin();
           }
+
           .regenerate-button {
             border-radius: 8px;
             border: none;
             background-color: #10a37f;
             color: #fff;
+
             .regenerate {
               width: 14px;
               height: 14px;
               transform-origin: center center;
             }
+
             .regenerate-rotate {
               animation: regenerate 1s linear infinite;
             }
           }
         }
       }
+
       .chat-container-textarea {
         position: relative;
         width: 100%;
@@ -187,18 +220,22 @@
         .theme-bg-mixin();
         .theme-border-mixin();
         .theme-shadow-mixin();
+
         & > span:first-of-type {
           height: 0;
         }
+
         .file-container {
           width: 100%;
           display: flex;
+
           .file-container-item {
             margin-right: 10px;
             margin-bottom: 10px;
             position: relative;
             border-radius: 6px;
             background-color: #f2f2f2;
+
             .file-clear-icon {
               position: absolute;
               top: 0;
@@ -210,6 +247,7 @@
               z-index: 10;
             }
           }
+
           .file-container-item-image {
             :deep(.ant-image) {
               .ant-image-img {
@@ -219,6 +257,7 @@
               }
             }
           }
+
           .file-container-item-file {
             min-width: 150px;
             height: 60px;
@@ -228,6 +267,7 @@
             align-items: center;
           }
         }
+
         textarea {
           width: 95%;
           border: none;
@@ -235,19 +275,24 @@
           background-color: transparent;
           min-height: unset !important;
           .theme-text-mixin();
+
           &:focus {
             box-shadow: unset;
           }
+
           &::-webkit-scrollbar {
             width: 6px;
             height: 6px;
           }
+
           &::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.15);
             border-radius: 3px;
             -webkit-box-shadow: inset 0 0 5px rgba(37, 37, 37, 0.05);
           }
+
           /* 滚动条滑块 */
+
           &::-webkit-scrollbar-thumb {
             background: rgba(255, 255, 255, 0.2);
             border-radius: 3px;
@@ -255,6 +300,7 @@
           }
         }
       }
+
       .chat-to-bottom-icon {
         cursor: pointer;
         position: absolute;
@@ -269,6 +315,7 @@
   }
 }
 
+
 .left-icon {
   position: absolute;
   font-size: 20px;
@@ -277,10 +324,12 @@
   z-index: 1;
   .theme-text-mixin();
 }
+
 .left-icon-rotate {
   bottom: 10px;
   transform: translateY(-50%) rotateZ(135deg);
 }
+
 .left-icon-not-allowed {
   cursor: pointer;
 }
@@ -294,18 +343,22 @@
   transform: translateY(-50%);
   .theme-text-mixin();
 }
+
 .right-icon-unable-send {
   color: #6a6b7b !important;
 }
+
 :deep(p) {
   margin: 10px 0 !important;
 }
+
 :deep(.hljs) {
   position: relative;
   width: 100%;
   white-space: pre-wrap;
   padding: 30px 20px 20px 20px !important;
   border-radius: 8px;
+
   .copy-code-container {
     width: 100%;
     background-color: #000;
@@ -315,6 +368,7 @@
     display: flex;
     justify-content: flex-end;
   }
+
   .copy-code-btn {
     outline: none;
     border: none;
@@ -328,3 +382,49 @@
     transform: rotate(360deg);
   }
 }
+
+/* 心跳样式 */
+.message-text :deep(.blinking-cursor) {
+  display: inline-block;
+  width: 10px; /* 控制点的大小 */
+  height: 10px; /* 确保和宽度一样，形成圆点 */
+  background-color: black;
+  border-radius: 50%; /* 使其成为圆形 */
+  vertical-align: middle; /* 对齐到行的中间 */
+  margin-left: 2px; /* 向右移动 1px */
+  will-change: transform, opacity;
+  animation: heartbeat 1s infinite;
+}
+
+@keyframes heartbeat {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  25% {
+    transform: scale(1.25);
+    opacity: 0.75;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.25);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+

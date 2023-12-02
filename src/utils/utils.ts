@@ -1,3 +1,5 @@
+
+
 export const uuid = () => {
   var s: any[] = [];
   var hexDigits = "0123456789abcdef";
@@ -19,3 +21,8 @@ export const convertBase64 = (file: any) => {
     };
   });
 };
+
+// 定义一个延迟执行的函数
+export const sleep = (milliseconds : number) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}

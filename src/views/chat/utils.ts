@@ -1,3 +1,7 @@
+import NProgress from 'nprogress';
+
+NProgress.configure({ showSpinner: false, speed: 400, minimum: 0.2 });
+
 export const createImage = (url: string) => {
   return `<img src="${url}" style="width:500px; border-radius: 6px;margin-right: 10px; margin-bottom: 10px;"/><br/>`;
 };
