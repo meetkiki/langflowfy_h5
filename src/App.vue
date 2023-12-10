@@ -6,4 +6,10 @@
 </script>
 <style lang="less">
 @import "@/assets/styles/global.less";
+#app {
+  height: 100vh;
+  width: 100vw;
+  touch-action: pan-y;
+  overflow: hidden;
+}
 </style>

@@ -53,7 +53,7 @@
                 <span class="sender-name" v-if="msg.userType === Roles.ASSISTANT">
                   ChatGPT
                 </span>
-                <div class="message-text" v-html="renderMarkdown(msg.message)"></div>
+                <div class="message-text" :id="msg.messageId" v-html="renderMarkdown(msg.message)"></div>
               </div>
             </li>
           </ul>
@@ -114,7 +114,7 @@
                 multiple
                 name="file"
                 ref="uploadRef"
-                action="/api/uploadFile"
+                action="/api/upload_file"
                 :disabled="!store.isLogin"
                 :showUploadList="false"
                 :data="{ assistantId : assistant.id }"
@@ -207,6 +207,18 @@ import {
   chatHistoryMessages,
 } from "@/api/chat";
 import {
+  SyncOutlined,
+  PlusOutlined,
+  SendOutlined,
+  MessageOutlined,
+  LoadingOutlined,
+  PaperClipOutlined,
+  FileImageOutlined,
+  DownCircleOutlined,
+  PauseCircleOutlined,
+  CloseCircleOutlined,
+} from "@ant-design/icons-vue";
+import {
   h,
   ref,
   reactive,
@@ -262,6 +274,8 @@ const retry = reactive({
   retryFailed: false,
   regenerating: false,
 });
+const currentEventSource = ref<EventSourcePolyfill | null>(null);
+
 const isAbleSendMsg = computed(() =>
     !sending || (!state.userInput && !files.value.length) ? false : true
 );
@@ -288,18 +302,27 @@ const md = new MarkdownIt({
   },
 });
 
-const markdownRef = ref(null);
+const markdownRef = ref<string>("");
 
 const renderMarkdown = (rawMarkdown: any) => {
-  let markdown = md.render(rawMarkdown);
-  markdownRef.value = markdown;
-  return markdown;
+  return md.render(rawMarkdown);
 }
 
 const renderInputCursor = () => {
   nextTick(() => {
     let dom = document.getElementsByClassName("message-text")
     let parent = dom[dom.length - 1]
+    if (!markdownRef.value){
+      markdownRef.value = parent.id;
+    }
+    // 防止同时出现多个 光标
+    // console.log("parent id", parent.id)
+    if (markdownRef.value !== parent.id){
+      removeRenderInputCursor();
+    }
+    // 更新id
+    markdownRef.value = parent.id;
+
     let lastNode = parent.lastElementChild || parent
     // 假如是pre标签，就在pre标签中找到class为hljs的元素
     if (lastNode.tagName === 'PRE') {
@@ -311,8 +334,7 @@ const renderInputCursor = () => {
     }
 
     // 重复插入 跳过
-    let lastChild = lastNode.lastChild as Element
-    if (lastChild && lastChild.tagName == 'SPAN'){
+    if (lastNode.querySelector('.blinking-cursor')) {
       return
     }
     // 插入光标到最后一个文本节点之后
@@ -365,7 +387,7 @@ const getChatId = async () => {
   pushMessage();
 };
 
-function displayBatchMessage(data : object) {
+function displayMessage(data : object) {
   let {messageId, type, toolType, streamType, content, files = [], done, role} = data as any;
   if (!messageId || messageId === "null") {
     console.log(" messageId error ", messageId)
@@ -428,7 +450,6 @@ const initEventSource = () => {
         // console.log("Heartbeat received");
         return;
       }
-
       if (done) {
         sending.value = false;
         state.messages.at(-1).done = done;
@@ -442,7 +463,7 @@ const initEventSource = () => {
       if (!content || content === "null") {
         return;
       }
-      displayBatchMessage(parseData);
+      displayMessage(parseData);
       if (!done){
         renderInputCursor();
       }
@@ -458,11 +479,15 @@ const initEventSource = () => {
       retry.retryFailed = false;
       retrySseConnection();
     };
+    // 保存EventSource实例的引用
+    currentEventSource.value = eventSource;
   });
 };
 
 /* 删除光标 */
-const removeRenderInputCursor = () => {
+const removeRenderInputCursor = async () => {
+  // 防止后来的删除快于渲染
+  await sleep(100);
   let dom = document.getElementsByClassName("blinking-cursor") as HTMLCollectionOf<Element>;
   if (dom){
     for (let i = 0; i < dom.length; i++) {
@@ -501,7 +526,7 @@ const sendMessage = () => {
           if (code !== 200) {
             return message.error(msg);
           } else {
-            console.log(" send message Id = ", data.messageId)
+            // console.log(" send message Id = ", data.messageId)
             state.messages.push({
               time: Date.now(),
               message: input,
@@ -840,16 +865,25 @@ const validateLogin = () => {
     resolve(true);
   });
 };
+// 将timer定义在外部，以便可以清除它
+let timer: number;
 /* sse 断连重试 */
 const retrySseConnection = () => {
   if (retry.retrying) return;
   retry.retrying = true;
-  let timer: number;
+
+  if (timer) {
+    clearInterval(timer); // 清除现有的定时器
+  }
+
   if (retry.retryMaxTimes >= RETRY_MAX_TIMES) {
     retry.retrying = false;
     retry.retryFailed = true;
     return;
   }
+  // 取消现有的 EventSource 连接
+  cancelEventSource();
+
   timer = window.setInterval(async () => {
     if (retry.retryMaxTimes >= RETRY_MAX_TIMES) {
       clearInterval(timer);
@@ -859,10 +893,20 @@ const retrySseConnection = () => {
     }
     console.info(`重试第${retry.retryMaxTimes}次`);
     ++retry.retryMaxTimes;
-    // 延迟0.5s后重试
-    sleep(500).then(() => initEventSource());
-  }, 1000);
+    // 延迟1s后重试
+    sleep(1000).then(() => initEventSource());
+  }, 3000);
 };
+// 创建一个取消EventSource连接的方法
+const cancelEventSource = () => {
+  if (currentEventSource) {
+    if (currentEventSource.value) {
+      currentEventSource.value.close();
+    }
+    currentEventSource.value = null;
+  }
+};
+
 /* Regenerate */
 const handleRegenerate = async () => {
   retry.regenerating = true;

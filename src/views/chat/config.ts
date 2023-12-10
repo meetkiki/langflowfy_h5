@@ -34,4 +34,4 @@ export enum Roles {
 
 export const downloadReg = /(\S*)\[\S*\]\(sandbox:\/mnt\/data\/\S*\)(\S*)/gi;
 
-export const RETRY_MAX_TIMES = 5;
+export const RETRY_MAX_TIMES = 2;
